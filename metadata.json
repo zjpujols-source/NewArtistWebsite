@@ -1,0 +1,8 @@
+{
+  "name": "Your Artist Name | Official Site",
+  "description": "Official artist website template featuring music, tour dates, videos, merch store, and contact information.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
