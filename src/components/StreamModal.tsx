@@ -1,6 +1,16 @@
 import React from 'react';
 import { Release } from '../types/artist';
-import { X, ExternalLink, Music, Disc } from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
+import {
+  SpotifyIcon,
+  AppleMusicIcon,
+  YouTubeMusicIcon,
+  YouTubeIcon,
+  AmazonMusicIcon,
+  DeezerIcon,
+  TidalIcon,
+  SoundCloudIcon
+} from './PlatformIcons';
 
 interface StreamModalProps {
   release: Release | null;
@@ -40,11 +50,7 @@ export const StreamModal: React.FC<StreamModalProps> = ({
       iconBg: 'bg-[#1DB954] text-black',
       textColor: 'text-white',
       badge: 'Stream',
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.516 17.316c-.217.356-.677.469-1.03.252-2.822-1.725-6.375-2.116-10.56-1.157-.404.093-.811-.161-.904-.565-.093-.404.161-.811.565-.904 4.582-1.047 8.513-.598 11.677 1.341.356.216.47.677.252 1.033zm1.474-3.279c-.273.443-.852.585-1.294.312-3.23-1.986-8.156-2.56-11.977-1.401-.497.151-1.025-.133-1.176-.63-.151-.498.133-1.025.63-1.176 4.37-1.328 9.792-.686 13.505 1.6 4.43.272.585.852.312 1.295zm.127-3.414C15.228 8.49 8.868 8.28 5.163 9.405c-.613.187-1.264-.162-1.452-.774-.187-.613.162-1.264.774-1.452 4.257-1.293 11.278-1.05 15.694 1.571.552.328.735 1.043.407 1.595-.328.552-1.043.735-1.595.407z"/>
-        </svg>
-      ),
+      icon: <SpotifyIcon className="w-5 h-5 fill-current" />,
     });
   }
 
@@ -55,11 +61,7 @@ export const StreamModal: React.FC<StreamModalProps> = ({
       iconBg: 'bg-[#FA243C] text-white',
       textColor: 'text-white',
       badge: 'Stream / Buy',
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M23.994 6.124a9.23 9.23 0 00-.328-1.578c-.287-.893-.762-1.683-1.428-2.35A5.877 5.877 0 0019.888.77c-.894-.288-1.894-.374-3.085-.374H7.2c-1.192 0-2.19.086-3.084.374A5.882 5.882 0 002.69 2.196c-.666.667-1.14 1.457-1.428 2.35A9.23 9.23 0 00.934 6.124C.893 7.02.893 8.02.893 9.212v5.576c0 1.192 0 2.192.041 3.088.04.893.18 1.682.467 2.35.288.893.762 1.683 1.428 2.35a5.886 5.886 0 001.426 1.426c.894.288 1.892.374 3.084.374h9.603c1.191 0 2.191-.086 3.085-.374a5.877 5.877 0 001.428-1.426c.666-.667 1.141-1.457 1.428-2.35.287-.668.427-1.457.467-2.35.041-.896.041-1.896.041-3.088V9.212c0-1.192 0-2.192-.041-3.088zM17.45 14.88c0 2.174-1.642 3.65-3.837 3.65-2.158 0-3.666-1.476-3.666-3.468 0-2.008 1.542-3.484 3.683-3.484.514 0 1.01.099 1.46.29v-5.69l-6.42 1.426v8.423c0 2.174-1.643 3.65-3.837 3.65-2.158 0-3.666-1.476-3.666-3.468 0-2.008 1.542-3.484 3.683-3.484.514 0 1.01.099 1.46.29v-7.22l8.76-1.933v10.608z"/>
-        </svg>
-      ),
+      icon: <AppleMusicIcon className="w-5 h-5 fill-current" />,
     });
   }
 
@@ -71,11 +73,7 @@ export const StreamModal: React.FC<StreamModalProps> = ({
       iconBg: 'bg-[#FF0000] text-white',
       textColor: 'text-white',
       badge: 'Stream',
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.2c-3.972 0-7.2-3.228-7.2-7.2s3.228-7.2 7.2-7.2 7.2 3.228 7.2 7.2-3.228 7.2-7.2 7.2zm0-11.52c-2.384 0-4.32 1.936-4.32 4.32s1.936 4.32 4.32 4.32 4.32-1.936 4.32-4.32-1.936-4.32-4.32-4.32zm-1.44 6.192V10.128l3.6 2.184-3.6 2.184z"/>
-        </svg>
-      ),
+      icon: <YouTubeMusicIcon className="w-5 h-5 fill-current" />,
     });
   }
 
@@ -86,11 +84,7 @@ export const StreamModal: React.FC<StreamModalProps> = ({
       iconBg: 'bg-[#FF0000] text-white',
       textColor: 'text-white',
       badge: 'Watch Video',
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-        </svg>
-      ),
+      icon: <YouTubeIcon className="w-5 h-5 fill-current" />,
     });
   }
 
@@ -102,7 +96,7 @@ export const StreamModal: React.FC<StreamModalProps> = ({
       iconBg: 'bg-[#00A8E1] text-white',
       textColor: 'text-white',
       badge: 'Stream',
-      icon: <Music className="w-5 h-5" />,
+      icon: <AmazonMusicIcon className="w-5 h-5 fill-current" />,
     });
   }
 
@@ -114,7 +108,7 @@ export const StreamModal: React.FC<StreamModalProps> = ({
       iconBg: 'bg-[#FEAA2D] text-black',
       textColor: 'text-white',
       badge: 'Stream',
-      icon: <Disc className="w-5 h-5" />,
+      icon: <DeezerIcon className="w-5 h-5 fill-current" />,
     });
   }
 
@@ -126,11 +120,7 @@ export const StreamModal: React.FC<StreamModalProps> = ({
       iconBg: 'bg-black border border-white/30 text-white',
       textColor: 'text-white',
       badge: 'HiFi Stream',
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M12 7.2L7.2 12 12 16.8 16.8 12 12 7.2zM4.8 12L0 16.8 4.8 21.6 9.6 16.8 4.8 12zM19.2 12L14.4 16.8 19.2 21.6 24 16.8 19.2 12zM12 2.4L7.2 7.2 12 12 16.8 7.2 12 2.4z"/>
-        </svg>
-      ),
+      icon: <TidalIcon className="w-5 h-5 fill-current" />,
     });
   }
 
@@ -141,7 +131,7 @@ export const StreamModal: React.FC<StreamModalProps> = ({
       iconBg: 'bg-[#FF5500] text-white',
       textColor: 'text-white',
       badge: 'Stream',
-      icon: <Music className="w-5 h-5" />,
+      icon: <SoundCloudIcon className="w-5 h-5 fill-current" />,
     });
   }
 
