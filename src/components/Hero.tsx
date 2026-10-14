@@ -95,9 +95,11 @@ export const Hero: React.FC<HeroProps> = ({ config }) => {
           muted
           playsInline
           disablePictureInPicture
-          preload="metadata"
+          preload="auto"
           className="w-full h-full object-cover object-center opacity-90 transition-opacity duration-500 pointer-events-none"
-        />
+        >
+          <source src={config.heroVideoUrl || '/hero-video.mp4'} type="video/mp4" />
+        </video>
 
         {/* Subtle Overlay gradient for contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40 pointer-events-none" />
