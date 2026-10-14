@@ -101,17 +101,27 @@ export const VideosTab: React.FC<VideosTabProps> = ({ config }) => {
               )}
             </div>
 
-            {/* Bottom Row of Other Thumbnails (4 videos: 2x2 on mobile, 1x4 on desktop) */}
-            {otherVideos.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                {otherVideos.map((video) => {
-                  const actualIdx = allVideos.findIndex(v => v.id === video.id);
+            {/* Video Selector Grid (e.g. 2 equal columns for 2 videos) */}
+            {allVideos.length > 1 && (
+              <div className={`grid gap-3 pt-3 ${
+                allVideos.length === 2 
+                  ? 'grid-cols-2' 
+                  : allVideos.length === 3 
+                    ? 'grid-cols-3' 
+                    : 'grid-cols-2 sm:grid-cols-4'
+              }`}>
+                {allVideos.map((video, idx) => {
+                  const isSelected = idx === selectedIndex;
                   const thumb = video.thumbnail || (video.youtubeId ? `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg` : "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80");
                   return (
                     <div
                       key={video.id}
-                      onClick={() => handleSelectVideo(actualIdx)}
-                      className="group relative flex flex-col bg-zinc-900 border border-white/10 hover:border-white/60 cursor-pointer overflow-hidden transition-all shadow-lg rounded-lg sm:rounded-none"
+                      onClick={() => handleSelectVideo(idx)}
+                      className={`group relative flex flex-col bg-zinc-900 border cursor-pointer overflow-hidden transition-all shadow-lg rounded-none ${
+                        isSelected 
+                          ? 'border-white ring-1 ring-white/60 opacity-100' 
+                          : 'border-white/10 hover:border-white/60 opacity-60 hover:opacity-100'
+                      }`}
                       title={video.title}
                     >
                       {/* Thumbnail Container */}
@@ -119,17 +129,23 @@ export const VideosTab: React.FC<VideosTabProps> = ({ config }) => {
                         <img
                           src={thumb}
                           alt={video.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-85 group-hover:opacity-100"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                          <div className="w-8 h-8 rounded-full bg-black/80 text-white border border-white/30 flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg">
-                            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                          </div>
+                          {isSelected ? (
+                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-white text-black px-2.5 py-1 shadow-2xl">
+                              Now Playing
+                            </span>
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-black/80 text-white border border-white/30 flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg">
+                              <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                            </div>
+                          )}
                         </div>
                       </div>
 
                       {/* Info Below Thumbnail */}
-                      <div className="p-2 sm:p-2.5 flex flex-col justify-between flex-1 bg-zinc-950">
+                      <div className="p-2 sm:p-2.5 flex items-center justify-between flex-1 bg-zinc-950">
                         <h4 className="text-[11px] sm:text-xs font-bold uppercase text-white truncate group-hover:text-purple-300 transition-colors leading-snug">
                           {video.title}
                         </h4>

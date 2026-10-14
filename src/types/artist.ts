@@ -43,6 +43,7 @@ export interface Release {
   tidalUrl?: string;
   soundcloudUrl?: string;
   songlinkUrl?: string;
+  youtubeUrl?: string;
 }
 
 export interface VideoItem {
