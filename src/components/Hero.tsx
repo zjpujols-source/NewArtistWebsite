@@ -37,8 +37,15 @@ export const Hero: React.FC<HeroProps> = ({ config }) => {
     videoEl.setAttribute('disablePictureInPicture', 'true');
     videoEl.setAttribute('disableRemotePlayback', 'true');
 
+    // Forcefully exit native fullscreen if mobile webview ever attempts to pop it open
+    const exitNativeFullscreen = () => {
+      videoEl.webkitExitFullscreen?.();
+    };
+    videoEl.addEventListener('webkitbeginfullscreen', exitNativeFullscreen);
+
     let animId: number;
     let isDestroyed = false;
+    let hasStartedPlayback = false;
 
     const renderLoop = () => {
       if (isDestroyed) return;
@@ -48,56 +55,56 @@ export const Hero: React.FC<HeroProps> = ({ config }) => {
       animId = requestAnimationFrame(renderLoop);
     };
 
-    const tryPlay = () => {
-      if (isDestroyed) return;
+    const playVideo = () => {
+      if (isDestroyed || !videoEl) return;
       videoEl.muted = true;
+      hasStartedPlayback = true;
       const promise = videoEl.play();
       if (promise !== undefined) {
-        promise.catch(() => {
-          // If in-app browser blocks autonomous autoplay on load,
-          // unlock playback on the very first user interaction
-          const unlock = () => {
-            if (videoEl && videoEl.paused) {
-              videoEl.muted = true;
-              videoEl.play().catch(() => {});
-            }
-          };
-          window.addEventListener('touchstart', unlock, { once: true, passive: true });
-          window.addEventListener('scroll', unlock, { once: true, passive: true });
-          window.addEventListener('click', unlock, { once: true });
-          window.addEventListener('pointerdown', unlock, { once: true });
-        });
+        promise.catch(() => {});
       }
     };
 
-    tryPlay();
     animId = requestAnimationFrame(renderLoop);
 
-    videoEl.addEventListener('loadedmetadata', tryPlay);
-    videoEl.addEventListener('canplay', tryPlay);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    // Auto-resume if app minimizes or tab switches
+    if (isMobile) {
+      // On mobile (TikTok / Instagram / iOS WKWebView):
+      // NEVER trigger video.play() on initial page load, because in-app browsers
+      // intercept load-time autoplay as an autonomous presentation and force full-screen player.
+      // Instead, seamlessly start the background loop on the very first touch, scroll, or tap!
+      const handleFirstInteraction = () => {
+        playVideo();
+      };
+
+      window.addEventListener('touchstart', handleFirstInteraction, { once: true, passive: true });
+      window.addEventListener('scroll', handleFirstInteraction, { once: true, passive: true });
+      window.addEventListener('pointerdown', handleFirstInteraction, { once: true, passive: true });
+      window.addEventListener('click', handleFirstInteraction, { once: true });
+    } else {
+      // On desktop: safe to start immediately
+      playVideo();
+      videoEl.addEventListener('loadedmetadata', playVideo);
+      videoEl.addEventListener('canplay', playVideo);
+    }
+
+    // Auto-resume if app minimizes and comes back, only if user already started playing
     const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        tryPlay();
+      if (document.visibilityState === 'visible' && hasStartedPlayback && videoEl.paused) {
+        playVideo();
       }
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Auto-resume if background video pauses
-    const handlePause = () => {
-      if (document.visibilityState === 'visible') {
-        tryPlay();
-      }
-    };
-    videoEl.addEventListener('pause', handlePause);
-
     return () => {
       isDestroyed = true;
       cancelAnimationFrame(animId);
-      videoEl.removeEventListener('loadedmetadata', tryPlay);
-      videoEl.removeEventListener('canplay', tryPlay);
-      videoEl.removeEventListener('pause', handlePause);
+      videoEl.removeEventListener('webkitbeginfullscreen', exitNativeFullscreen);
+      if (!isMobile) {
+        videoEl.removeEventListener('loadedmetadata', playVideo);
+        videoEl.removeEventListener('canplay', playVideo);
+      }
       document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
@@ -113,13 +120,11 @@ export const Hero: React.FC<HeroProps> = ({ config }) => {
       {/* 
         1x1 Pixel Invisible Driver Video:
         Positioned inside layout viewport so WebKit keeps hardware decoding active,
-        but completely invisible (1px at 0.001 opacity behind everything) so mobile webviews
-        cannot detect or hijack it as a clickable/interactive media player.
+        without autoPlay so in-app browsers never hijack the initial page load into fullscreen.
       */}
       <video
         ref={videoRef}
         src={config.heroVideoUrl || '/hero-video.mp4'}
-        autoPlay
         loop
         muted
         playsInline
