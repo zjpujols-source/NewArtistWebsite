@@ -25,7 +25,7 @@ export const Footer: React.FC<FooterProps> = ({ config }) => {
               title={soc.label}
               className="w-[44px] h-[44px] rounded-[12px] bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white hover:bg-[#262626] hover:-translate-y-0.5 transition-all duration-150 shadow-md"
             >
-              {getPlatformIcon(soc.platform, "w-[22px] h-[22px]") || (soc.isStreaming ? (
+              {getPlatformIcon(soc.platform, "w-[22px] h-[22px] fill-white text-white") || (soc.isStreaming ? (
                 <Headphones className="w-[22px] h-[22px]" />
               ) : (
                 <ExternalLink className="w-[22px] h-[22px]" />
