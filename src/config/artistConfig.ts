@@ -12,7 +12,7 @@ export const defaultArtistConfig: ArtistConfig = {
   // ============================================================
   // HERO
   // ============================================================
-  heroVideoUrl: "/hero-video.mp4",
+  heroVideoUrl: "/hero-loop.webp",
   heroImage: "/hero-poster.jpg",
   profileImage: "/covers/melt-away.jpg",
 
