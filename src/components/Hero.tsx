@@ -19,6 +19,7 @@ export const Hero: React.FC<HeroProps> = ({ config }) => {
     videoEl.muted = true;
     videoEl.defaultMuted = true;
     videoEl.volume = 0;
+    videoEl.playsInline = true;
     videoEl.setAttribute('muted', '');
     videoEl.setAttribute('playsinline', '');
     videoEl.setAttribute('webkit-playsinline', 'true');
@@ -30,42 +31,55 @@ export const Hero: React.FC<HeroProps> = ({ config }) => {
     videoEl.setAttribute('controlsList', 'nofullscreen nodownload noremoteplayback noplaybackrate');
 
     const tryPlay = () => {
-      if (videoEl && videoEl.paused) {
-        const promise = videoEl.play();
-        if (promise !== undefined) {
-          promise.catch(() => {
-            // Silently ignore browser autoplay deferrals
-          });
-        }
+      if (!videoEl) return;
+      videoEl.muted = true;
+      const promise = videoEl.play();
+      if (promise !== undefined) {
+        promise.catch(() => {
+          // If in-app browser blocks autonomous autoplay on load,
+          // unlock playback immediately on first user touch/scroll/click without opening fullscreen:
+          const startPlayback = () => {
+            if (videoEl && videoEl.paused) {
+              videoEl.muted = true;
+              videoEl.play().catch(() => {});
+            }
+          };
+
+          window.addEventListener('touchstart', startPlayback, { once: true, passive: true });
+          window.addEventListener('scroll', startPlayback, { once: true, passive: true });
+          window.addEventListener('click', startPlayback, { once: true });
+          window.addEventListener('pointerdown', startPlayback, { once: true });
+        });
       }
     };
 
-    // Auto-resume if in-app browser or iOS ever pauses the background video
-    const handlePause = () => {
-      tryPlay();
-    };
+    // Attempt playback immediately and on media ready events
+    tryPlay();
 
-    // Resume when coming back to tab / viewport
-    const handleVisibilityChange = () => {
+    videoEl.addEventListener('loadedmetadata', tryPlay);
+    videoEl.addEventListener('canplay', tryPlay);
+
+    // Auto-resume if app minimizes or tab switches
+    const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         tryPlay();
       }
     };
+    document.addEventListener('visibilitychange', handleVisibility);
 
-    tryPlay();
-
-    videoEl.addEventListener('loadedmetadata', tryPlay);
-    videoEl.addEventListener('loadeddata', tryPlay);
-    videoEl.addEventListener('canplay', tryPlay);
+    // Auto-resume if background video ever pauses
+    const handlePause = () => {
+      if (document.visibilityState === 'visible') {
+        tryPlay();
+      }
+    };
     videoEl.addEventListener('pause', handlePause);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       videoEl.removeEventListener('loadedmetadata', tryPlay);
-      videoEl.removeEventListener('loadeddata', tryPlay);
       videoEl.removeEventListener('canplay', tryPlay);
       videoEl.removeEventListener('pause', handlePause);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 
@@ -81,6 +95,12 @@ export const Hero: React.FC<HeroProps> = ({ config }) => {
           loop
           muted
           playsInline
+          {...{
+            'webkit-playsinline': 'true',
+            'x5-playsinline': 'true',
+            'x5-video-player-type': 'h5',
+            'x5-video-player-fullscreen': 'false',
+          }}
           disablePictureInPicture
           disableRemotePlayback
           preload="auto"
@@ -88,15 +108,13 @@ export const Hero: React.FC<HeroProps> = ({ config }) => {
           aria-hidden="true"
           controlsList="nofullscreen nodownload noremoteplayback noplaybackrate"
           className="w-full h-full object-cover object-center opacity-90 transition-opacity duration-500 pointer-events-none select-none"
-        >
-          <source src={config.heroVideoUrl || '/hero-video.mp4'} type="video/mp4" />
-        </video>
+        />
 
         {/* Subtle Overlay gradient for contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40 pointer-events-none" />
       </div>
 
-      {/* Touch & Click Shield: Absorbs taps/clicks so mobile webviews cannot treat background video as clickable media */}
+      {/* Touch & Click Shield: Absorbs taps so mobile webviews cannot treat background video as clickable media */}
       <div 
         className="absolute inset-0 z-[1] touch-pan-y pointer-events-auto"
         onClick={(e) => {
